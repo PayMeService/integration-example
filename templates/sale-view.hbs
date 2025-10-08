@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="header with-actions">
+        <h1>Sale <span class="sale-id">{{saleId}}</span></h1>
+        <div class="actions">
+            <a href="{{saleUrl}}" target="_blank" class="btn btn-secondary">Open in New Tab</a>
+            <a href="/generate-sale-form" class="btn btn-primary">Generate New Sale</a>
+        </div>
+    </div>
+    
+    <div class="iframe-container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading sale page...</p>
+        </div>
+        <iframe 
+            id="saleFrame" 
+            src="{{saleUrl}}" 
+            title="Sale {{saleId}}"
+            onload="document.getElementById('loading').style.display='none';"
+            allow="payment"
+        ></iframe>
+    </div>
+</div>

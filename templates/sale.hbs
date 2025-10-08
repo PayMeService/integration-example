@@ -1,0 +1,97 @@
+<div class="container">
+    <div class="header">
+        <h1>PayMe Sale Generated Successfully</h1>
+        
+        <div class="sale-info">
+            <div class="info-item">
+                <div class="info-label">Sale ID</div>
+                <div class="info-value">{{payme_sale_id}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Amount</div>
+                <div class="info-value">{{price}} {{currency}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Product</div>
+                <div class="info-value">{{product_name}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Payment Method</div>
+                <div class="info-value">{{sale_payment_method}}</div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Status Code</div>
+                <div class="info-value">
+                    {{#if success}}
+                        <span class="status success">Success ({{status_code}})</span>
+                    {{else}}
+                        <span class="status error">Error ({{status_code}})</span>
+                    {{/if}}
+                </div>
+            </div>
+            
+            {{#if payme_sale_code}}
+            <div class="info-item">
+                <div class="info-label">Sale Code</div>
+                <div class="info-value">{{payme_sale_code}}</div>
+            </div>
+            {{/if}}
+        </div>
+        
+        {{#if sale_url}}
+        <div class="url-display">
+            <strong>Sale URL:</strong> {{sale_url}}
+        </div>
+        {{/if}}
+    </div>
+    
+    <div class="iframe-container">
+        <div class="iframe-header">
+            <div class="iframe-title">PayMe Payment Page</div>
+            <div class="actions">
+                <a href="{{sale_url}}" target="_blank" class="btn btn-secondary">Open in New Tab</a>
+                <a href="/generate-sale-form" class="btn btn-primary">Generate New Sale</a>
+            </div>
+        </div>
+        
+        {{#if sale_url}}
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading payment page...</p>
+            </div>
+            <iframe 
+                id="paymeFrame" 
+                src="{{sale_url}}" 
+                title="PayMe Payment"
+                onload="document.getElementById('loading').style.display='none';"
+                onerror="handleIframeError()"
+            ></iframe>
+        {{else}}
+            <div class="error-container">
+                <div class="error-title">Error Loading Payment Page</div>
+                <p>The sale URL was not provided in the response. Please check the API configuration and try again.</p>
+            </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    function handleIframeError() {
+        document.getElementById('loading').innerHTML = `
+            <div class="error-container">
+                <div class="error-title">Failed to Load Payment Page</div>
+                <p>The payment page could not be loaded in the iframe. This might be due to security restrictions.</p>
+                <p>You can still access the payment page by clicking the "Open in New Tab" button above.</p>
+            </div>
+        `;
+    }
+    
+    // Listen for messages from the iframe (if PayMe posts any)
+    window.addEventListener('message', function(event) {
+        console.log('Message received from iframe:', event.data);
+    });
+</script>

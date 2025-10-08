@@ -1,0 +1,35 @@
+name: payment-wrapper
+functions:
+  - name: api
+    runtime: nodejs:18
+    source_url: https://github.com/your-username/payment-wrapper
+    source_commit_hash: main
+    build_command: npm install
+    run_command: node index.js
+    environment:
+      - key: PAYME_ENV_DOMAIN
+        value: ${PAYME_ENV_DOMAIN}
+        type: SECRET
+      - key: PAYME_SELLER_ID
+        value: ${PAYME_SELLER_ID}
+        type: SECRET
+      - key: APPLE_PAY_CERTIFICATE
+        value: ${APPLE_PAY_CERTIFICATE}
+        type: SECRET
+      - key: PORT
+        value: "8080"
+    routes:
+      - path: /
+        method: [GET, POST, PUT, DELETE, OPTIONS]
+    cors:
+      allow_origins:
+        - "*"
+      allow_methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      allow_headers:
+        - content-type
+        - authorization

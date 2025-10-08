@@ -1,0 +1,63 @@
+<div class="container form-container">
+    <div class="form-wrapper">
+        <h1>Generate PayMe Sale</h1>
+        <form id="saleForm" action="/generate-sale" method="POST">
+            <div class="form-group">
+                <label for="seller_payme_id">Seller PayMe ID</label>
+                <input type="text" id="seller_payme_id" name="seller_payme_id" required value="{{defaultSellerId}}">
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label for="sale_price">Sale Price</label>
+                    <input type="number" id="sale_price" name="sale_price" required value="100" min="1" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+                    <select id="currency" name="currency" required>
+                        <option value="ILS" selected>ILS</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="product_name">Product Name</label>
+                <input type="text" id="product_name" name="product_name" required value="Test Product">
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language" name="language" required>
+                        <option value="en" selected>English</option>
+                        <option value="he">Hebrew</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sale_payment_method">Payment Method</label>
+                    <select id="sale_payment_method" name="sale_payment_method" required>
+                        <option value="multi" selected>Multi</option>
+                        <option value="credit-card">Credit Card</option>
+                        <option value="bit">Bit</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sale_type">Sale Type</label>
+                <select id="sale_type" name="sale_type" required>
+                    <option value="sale" selected>Sale</option>
+                    <option value="authorize">Authorize</option>
+                </select>
+            </div>
+            
+            <button type="submit">Generate Sale</button>
+        </form>
+        
+        <p class="info-text">This will generate a PayMe sale and display it in an iframe</p>
+    </div>
+</div>

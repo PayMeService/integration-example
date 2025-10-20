@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+
+    <!-- Apple Pay SDK - Must be loaded first -->
+    <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+    <!-- PayMe SDK -->
+    <script src="https://cdn.paymeservice.com/hf/v1/hostedfields.js"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .sale-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status.success {
+            color: #28a745;
+        }
+
+        .status.error {
+            color: #dc3545;
+        }
+
+        .payment-section {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        apple-pay-button {
+            --apple-pay-button-width: 200px;
+            --apple-pay-button-height: 50px;
+            --apple-pay-button-border-radius: 8px;
+            --apple-pay-button-padding: 0px 0px;
+            --apple-pay-button-box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .availability-message {
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            color: #856404;
+            margin: 20px 0;
+        }
+
+        .error-message {
+            padding: 20px;
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+            border-radius: 8px;
+            color: #721c24;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            padding: 20px;
+            background: #d4edda;
+            border: 1px solid #28a745;
+            border-radius: 8px;
+            color: #155724;
+            margin: 20px 0;
+        }
+
+        .console-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .console-log pre {
+            margin: 0;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{title}}</h1>
+        </div>
+
+        {{#if success}}
+        <div class="sale-info">
+            <div class="info-item">
+                <div class="info-label">Sale ID</div>
+                <div class="info-value">{{payme_sale_id}}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Amount</div>
+                <div class="info-value">{{price}} {{currency}}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Product</div>
+                <div class="info-value">{{product_name}}</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Payment Method</div>
+                <div class="info-value">Apple Pay</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Status</div>
+                <div class="info-value">
+                    <span class="status success">Ready ({{status_code}})</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="availability-check" class="availability-message hidden">
+            Checking Apple Pay availability...
+        </div>
+
+        <div id="not-available" class="availability-message hidden">
+            Apple Pay is not available on this device/browser. Please use a device that supports Apple Pay.
+        </div>
+
+        <div class="payment-section">
+            <div id="payment-ready" class="hidden">
+                <p>Click the button below to pay with Apple Pay</p>
+                <apple-pay-button
+                    id="pay-with-apple-pay"
+                    buttonstyle="black"
+                    type="buy"
+                    locale="en-US">
+                </apple-pay-button>
+            </div>
+        </div>
+
+        <div id="success-message" class="success-message hidden"></div>
+        <div id="error-message" class="error-message hidden"></div>
+
+        <div class="console-log">
+            <strong>Payment Flow Log:</strong>
+            <pre id="console-output"></pre>
+        </div>
+
+        {{else}}
+        <div class="error-message">
+            <strong>Error:</strong> {{error_message}}
+        </div>
+        {{/if}}
+
+        <div style="text-align: center;">
+            <a href="/generate-sale-form" class="back-button">Back to Form</a>
+        </div>
+    </div>
+
+    <script>
+        const consoleOutput = document.getElementById('console-output');
+        const availabilityCheck = document.getElementById('availability-check');
+        const notAvailable = document.getElementById('not-available');
+        const paymentReady = document.getElementById('payment-ready');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput.textContent += `[${timestamp}] ${message}\n`;
+            consoleOutput.parentElement.scrollTop = consoleOutput.parentElement.scrollHeight;
+            console.log(message);
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            log('ERROR: ' + message);
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.remove('hidden');
+            log('SUCCESS: ' + message);
+        }
+
+        // Only initialize if sale was created successfully
+        {{#if success}}
+        (function initializeApplePay() {
+            log('Initializing Apple Pay integration...');
+            availabilityCheck.classList.remove('hidden');
+
+            // Check Apple Pay availability
+            if (!window.PayMe) {
+                availabilityCheck.classList.add('hidden');
+                showError('PayMe SDK not loaded. Please refresh the page.');
+                return;
+            }
+
+            log('PayMe SDK loaded successfully');
+
+            // Check if Apple Pay is available
+            const isAvailable = PayMe.isApplePayAvailable();
+            const isVersionSupported = PayMe.isSupportsApplePayVersion();
+
+            log(`Apple Pay available: ${isAvailable}`);
+            log(`Apple Pay version supported: ${isVersionSupported}`);
+
+            if (isVersionSupported) {
+                log(`Apple Pay API version: ${PayMe.applePayApiVersion}`);
+            }
+
+            availabilityCheck.classList.add('hidden');
+
+            if (!isAvailable || !isVersionSupported) {
+                notAvailable.classList.remove('hidden');
+                log('Apple Pay is not available on this device');
+                return;
+            }
+
+            // Initialize PayMe
+            const apiKey = '{{apiKey}}';
+            const merchantId = '{{merchantId}}';
+            const saleGuid = '{{payme_sale_id}}';
+            const testMode = {{#if testMode}}true{{else}}false{{/if}};
+
+            log(`Initializing PayMe with API key: ${apiKey.substring(0, 8)}...`);
+            log(`Test mode: ${testMode}`);
+
+            PayMe.create(apiKey, { testMode: testMode })
+                .then(function(instance) {
+                    log('PayMe instance created successfully');
+
+                    // Create Apple Sale
+                    const saleConfig = {
+                        debugFn: function(message) {
+                            log(`[PayMe Debug] ${message}`);
+                        },
+                        merchantId: merchantId,
+                        saleGuid: saleGuid
+                    };
+
+                    log(`Creating Apple Sale with merchant ID: ${merchantId}`);
+                    log(`Sale GUID: ${saleGuid}`);
+
+                    const appleSale = instance.appleSale(saleConfig);
+
+                    // Configure interaction callbacks
+                    const interactionConfig = {
+                        payButtonSelector: '#pay-with-apple-pay',
+
+                        canceled: function() {
+                            log('Payment was cancelled by user');
+                            showError('Payment was cancelled. You can try again by clicking the Apple Pay button.');
+                        },
+
+                        validated: function(err) {
+                            if (err) {
+                                log(`Validation error: ${err.message}`);
+                                showError(`Validation error: ${err.message}`);
+                            } else {
+                                log('Payment validated successfully');
+                            }
+                        },
+
+                        paymentCompleted: function(err, sale) {
+                            if (err) {
+                                log(`Payment failed: ${err.message}`);
+                                showError(`Payment failed: ${err.message}`);
+                            } else {
+                                log('Payment completed successfully!');
+                                log(`Sale details: ${JSON.stringify(sale, null, 2)}`);
+                                showSuccess('Payment completed successfully! ' + JSON.stringify(sale, null, 2));
+                            }
+                        }
+                    };
+
+                    log('Initializing Apple Pay button...');
+
+                    appleSale.letsRock(interactionConfig)
+                        .then(function() {
+                            log('Apple Pay button initialized and ready');
+                            paymentReady.classList.remove('hidden');
+                        })
+                        .catch(function(err) {
+                            log(`Apple Pay initialization error: ${err.message}`);
+                            showError(`Apple Pay initialization failed: ${err.message}`);
+                        });
+                })
+                .catch(function(error) {
+                    log(`PayMe initialization error: ${error.message}`);
+                    showError(`Failed to initialize PayMe: ${error.message}`);
+                });
+        })();
+        {{/if}}
+    </script>
+</body>
+</html>

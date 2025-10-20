@@ -61,6 +61,89 @@ app.get('/sale/:saleId', (req, res) => {
   });
 });
 
+app.post('/generate-apple-pay-sale', async (req, res) => {
+  try {
+    const serverUrl = process.env.CORE_API_URL + '/api/generate-sale';
+
+    if (!serverUrl || !process.env.CORE_API_URL) {
+      throw new Error('CORE_API_URL environment variable is not configured');
+    }
+
+    if (!process.env.PAYME_API_KEY) {
+      throw new Error('PAYME_API_KEY environment variable is not configured');
+    }
+
+    if (!process.env.APPLE_PAY_MERCHANT_ID) {
+      throw new Error('APPLE_PAY_MERCHANT_ID environment variable is not configured');
+    }
+
+    // Extract form data
+    const {
+      seller_payme_id,
+      sale_price,
+      currency,
+      product_name,
+      language,
+      sale_type
+    } = req.body;
+
+    // Prepare request payload for Apple Pay
+    const payload = {
+      seller_payme_id: seller_payme_id || process.env.DEFAULT_SELLER_PAYME_ID,
+      sale_price: sale_price,
+      currency: currency || 'ILS',
+      product_name: product_name || 'Test Product',
+      language: language || 'en',
+      sale_payment_method: 'apple-pay', // Force Apple Pay payment method
+      sale_type: sale_type || 'sale',
+      installments: '1' // Apple Pay typically uses single installment
+    };
+
+    console.log('Sending Apple Pay sale request to PayMe API:', serverUrl);
+    console.log('Payload:', payload);
+
+    // Make API call to PayMe
+    const response = await axios.post(serverUrl, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 30000 // 30 seconds timeout
+    });
+
+    console.log('PayMe API Response:', response.data);
+
+    // Render the Apple Pay page
+    res.render('apple-pay', {
+      title: `Apple Pay - ${response.data.payme_sale_id || 'Generated'}`,
+      ...response.data,
+      success: response.data.status_code === 0,
+      product_name: payload.product_name,
+      apiKey: process.env.PAYME_API_KEY,
+      merchantId: process.env.APPLE_PAY_MERCHANT_ID,
+      testMode: process.env.PAYME_TEST_MODE === 'true'
+    });
+
+  } catch (error) {
+    console.error('Error generating Apple Pay sale:', error.message);
+    console.error('Error details:', error.response?.data || error);
+
+    // Render error page
+    res.status(500).render('apple-pay', {
+      title: 'Apple Pay - Error',
+      success: false,
+      status_code: error.response?.data?.status_code || 'ERROR',
+      payme_sale_id: 'N/A',
+      price: req.body.sale_price || 0,
+      currency: req.body.currency || 'ILS',
+      product_name: req.body.product_name || 'Test Product',
+      error_message: error.response?.data?.message || error.message || 'Failed to generate Apple Pay sale',
+      apiKey: process.env.PAYME_API_KEY || '',
+      merchantId: process.env.APPLE_PAY_MERCHANT_ID || '',
+      testMode: process.env.PAYME_TEST_MODE === 'true'
+    });
+  }
+});
+
 app.post('/generate-sale', async (req, res) => {
   try {
     const serverUrl = process.env.CORE_API_URL + '/api/generate-sale';

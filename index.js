@@ -69,14 +69,6 @@ app.post('/generate-apple-pay-sale', async (req, res) => {
       throw new Error('CORE_API_URL environment variable is not configured');
     }
 
-    if (!process.env.PAYME_API_KEY) {
-      throw new Error('PAYME_API_KEY environment variable is not configured');
-    }
-
-    if (!process.env.APPLE_PAY_MERCHANT_ID) {
-      throw new Error('APPLE_PAY_MERCHANT_ID environment variable is not configured');
-    }
-
     // Extract form data
     const {
       seller_payme_id,
@@ -84,8 +76,22 @@ app.post('/generate-apple-pay-sale', async (req, res) => {
       currency,
       product_name,
       language,
-      sale_type
+      sale_type,
+      payme_api_key,
+      apple_pay_merchant_id
     } = req.body;
+
+    // Use form values or fallback to environment variables
+    const apiKey = payme_api_key || process.env.PAYME_API_KEY;
+    const merchantId = apple_pay_merchant_id || process.env.APPLE_PAY_MERCHANT_ID;
+
+    if (!apiKey) {
+      throw new Error('PAYME_API_KEY is required for Apple Pay (provide in form or environment variable)');
+    }
+
+    if (!merchantId) {
+      throw new Error('APPLE_PAY_MERCHANT_ID is required for Apple Pay (provide in form or environment variable)');
+    }
 
     // Prepare request payload for Apple Pay
     const payload = {
@@ -118,14 +124,18 @@ app.post('/generate-apple-pay-sale', async (req, res) => {
       ...response.data,
       success: response.data.status_code === 0,
       product_name: payload.product_name,
-      apiKey: process.env.PAYME_API_KEY,
-      merchantId: process.env.APPLE_PAY_MERCHANT_ID,
+      apiKey: apiKey,
+      merchantId: merchantId,
       testMode: process.env.PAYME_TEST_MODE === 'true'
     });
 
   } catch (error) {
     console.error('Error generating Apple Pay sale:', error.message);
     console.error('Error details:', error.response?.data || error);
+
+    // Get API key and merchant ID for error page
+    const apiKey = req.body.payme_api_key || process.env.PAYME_API_KEY || '';
+    const merchantId = req.body.apple_pay_merchant_id || process.env.APPLE_PAY_MERCHANT_ID || '';
 
     // Render error page
     res.status(500).render('apple-pay', {
@@ -137,8 +147,8 @@ app.post('/generate-apple-pay-sale', async (req, res) => {
       currency: req.body.currency || 'ILS',
       product_name: req.body.product_name || 'Test Product',
       error_message: error.response?.data?.message || error.message || 'Failed to generate Apple Pay sale',
-      apiKey: process.env.PAYME_API_KEY || '',
-      merchantId: process.env.APPLE_PAY_MERCHANT_ID || '',
+      apiKey: apiKey,
+      merchantId: merchantId,
       testMode: process.env.PAYME_TEST_MODE === 'true'
     });
   }

@@ -6,7 +6,17 @@
                 <label for="seller_payme_id">Seller PayMe ID</label>
                 <input type="text" id="seller_payme_id" name="seller_payme_id" required value="{{defaultSellerId}}">
             </div>
-            
+
+            <div class="form-group">
+                <label for="payme_api_key">PayMe API Key <span class="optional-label">(Required for Apple Pay)</span></label>
+                <input type="text" id="payme_api_key" name="payme_api_key" placeholder="Optional - uses env variable if empty">
+            </div>
+
+            <div class="form-group">
+                <label for="apple_pay_merchant_id">Apple Pay Merchant ID <span class="optional-label">(Required for Apple Pay)</span></label>
+                <input type="text" id="apple_pay_merchant_id" name="apple_pay_merchant_id" placeholder="e.g., merchant.paymeproduction">
+            </div>
+
             <div class="row">
                 <div class="form-group">
                     <label for="sale_price">Sale Price</label>

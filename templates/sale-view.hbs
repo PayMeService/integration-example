@@ -12,12 +12,21 @@
             <div class="loading-spinner"></div>
             <p>Loading sale page...</p>
         </div>
-        <iframe 
-            id="saleFrame" 
-            src="{{saleUrl}}" 
+        <iframe
+            id="saleFrame"
+            src=""
             title="Sale {{saleId}}"
             onload="document.getElementById('loading').style.display='none';"
             allow="payment"
         ></iframe>
+        <script>
+            (function() {
+                const saleUrl = '{{saleUrl}}';
+                const origin = encodeURIComponent(window.location.host);
+                const separator = saleUrl.includes('?') ? '&' : '?';
+                const urlWithOrigin = saleUrl + separator + 'origin=' + origin;
+                document.getElementById('saleFrame').src = urlWithOrigin;
+            })();
+        </script>
     </div>
 </div>

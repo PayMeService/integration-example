@@ -63,14 +63,23 @@
                 <div class="loading-spinner"></div>
                 <p>Loading payment page...</p>
             </div>
-            <iframe 
-                id="paymeFrame" 
-                src="{{sale_url}}" 
+            <iframe
+                id="paymeFrame"
+                src=""
                 title="PayMe Payment"
                 onload="document.getElementById('loading').style.display='none';"
                 onerror="handleIframeError()"
                 allow="payment"
             ></iframe>
+            <script>
+                (function() {
+                    const saleUrl = '{{sale_url}}';
+                    const origin = encodeURIComponent(window.location.host);
+                    const separator = saleUrl.includes('?') ? '&' : '?';
+                    const urlWithOrigin = saleUrl + separator + 'origin=' + origin;
+                    document.getElementById('paymeFrame').src = urlWithOrigin;
+                })();
+            </script>
         {{else}}
             <div class="error-container">
                 <div class="error-title">Error Loading Payment Page</div>

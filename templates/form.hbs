@@ -2,27 +2,12 @@
     <div class="form-wrapper">
         <h1>Generate PayMe Sale</h1>
         <form id="saleForm" action="/generate-sale" method="POST">
-            <div class="form-group">
-                <label for="seller_payme_id">Seller PayMe ID</label>
-                <input type="text" id="seller_payme_id" name="seller_payme_id" required value="{{defaultSellerId}}">
-            </div>
-
-            <div class="form-group">
-                <label for="payme_api_key">PayMe API Key <span class="optional-label">(Required for Apple Pay)</span></label>
-                <input type="text" id="payme_api_key" name="payme_api_key" placeholder="Optional - uses env variable if empty">
-            </div>
-
-            <div class="form-group">
-                <label for="apple_pay_merchant_id">Apple Pay Merchant ID <span class="optional-label">(Required for Apple Pay)</span></label>
-                <input type="text" id="apple_pay_merchant_id" name="apple_pay_merchant_id" placeholder="e.g., merchant.paymeproduction">
-            </div>
-
             <div class="row">
                 <div class="form-group">
                     <label for="sale_price">Sale Price</label>
                     <input type="number" id="sale_price" name="sale_price" required value="100" min="1" step="0.01">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="currency">Currency</label>
                     <select id="currency" name="currency" required>
@@ -32,12 +17,12 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="product_name">Product Name</label>
                 <input type="text" id="product_name" name="product_name" required value="Test Product">
             </div>
-            
+
             <div class="row">
                 <div class="form-group">
                     <label for="language">Language</label>
@@ -46,7 +31,7 @@
                         <option value="he">Hebrew</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="sale_payment_method">Payment Method</label>
                     <select id="sale_payment_method" name="sale_payment_method" required>
@@ -56,7 +41,7 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <label for="sale_type">Sale Type</label>
                 <select id="sale_type" name="sale_type" required>
@@ -64,14 +49,21 @@
                     <option value="authorize">Authorize</option>
                 </select>
             </div>
-            
+
             <div class="button-group">
                 <button type="submit" formaction="/generate-sale" class="btn-primary">Generate Sale</button>
+                {{#if applePayEnabled}}
                 <button type="submit" formaction="/generate-apple-pay-sale" class="btn-apple-pay">Apple Pay</button>
+                {{else}}
+                <button type="button" class="btn-apple-pay btn-apple-pay-disabled" disabled title="Set Apple Pay Merchant ID in defaults to enable">Apple Pay</button>
+                {{/if}}
             </div>
         </form>
 
         <p class="info-text">Choose your payment method: Generate Sale for standard payment or Apple Pay for Apple payment</p>
+        {{#unless applePayEnabled}}
+        <p class="info-text" style="color: #888;">Apple Pay is disabled. Set Apple Pay Merchant ID in defaults to enable.</p>
+        {{/unless}}
 
         <p class="info-text">
             <a href="/" class="btn btn-secondary" style="margin-top: 15px;">Back to Home</a>

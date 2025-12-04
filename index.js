@@ -11,6 +11,7 @@ const saleController = require('./src/controllers/saleController');
 const applePayController = require('./src/controllers/applePayController');
 const vasController = require('./src/controllers/vasController');
 const { handleSaleError, handleVasError, asyncHandler } = require('./src/middleware/errorHandler');
+const { requireDefaults } = require('./src/middleware/requireDefaults');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,23 +37,26 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-// Index Routes
+// Index Routes (no auth required)
 app.get('/', indexController.getIndex);
 app.post('/defaults', indexController.saveDefaults);
-app.get('/sale', indexController.showSale);
 
-// Sale Routes
+// Apple Pay Certificate (no auth required)
 app.get('/.well-known/apple-developer-merchantid-domain-association', saleController.getAppleCertificate);
-app.get('/generate-sale-form', saleController.getGenerateSaleForm);
-app.get('/sale/:saleId', saleController.getSaleById);
-app.post('/generate-sale', asyncHandler(saleController.generateSale), handleSaleError('sale'));
-app.post('/generate-apple-pay-sale', asyncHandler(applePayController.generateApplePaySale), handleSaleError('apple-pay'));
 
-// VAS Routes
-app.get('/vas-enable-form', vasController.getVasEnableForm);
-app.get('/vas-update-form', vasController.getVasUpdateForm);
-app.post('/vas-enable', asyncHandler(vasController.enableVas), handleVasError('Enable'));
-app.post('/vas-update', asyncHandler(vasController.updateVas), handleVasError('Update'));
+// Protected Routes (require defaults)
+app.get('/sale', requireDefaults, indexController.showSale);
+app.get('/sale/:saleId', requireDefaults, saleController.getSaleById);
+app.get('/apple-pay-sale/:saleId', requireDefaults, saleController.getApplePaySaleById);
+app.get('/generate-sale-form', requireDefaults, saleController.getGenerateSaleForm);
+app.post('/generate-sale', requireDefaults, asyncHandler(saleController.generateSale), handleSaleError('sale'));
+app.post('/generate-apple-pay-sale', requireDefaults, asyncHandler(applePayController.generateApplePaySale), handleSaleError('apple-pay'));
+
+// VAS Routes (require defaults)
+app.get('/vas-enable-form', requireDefaults, vasController.getVasEnableForm);
+app.get('/vas-update-form', requireDefaults, vasController.getVasUpdateForm);
+app.post('/vas-enable', requireDefaults, asyncHandler(vasController.enableVas), handleVasError('Enable'));
+app.post('/vas-update', requireDefaults, asyncHandler(vasController.updateVas), handleVasError('Update'));
 
 app.listen(PORT, () => {
   console.log(`Payment wrapper server running on port ${PORT}`);

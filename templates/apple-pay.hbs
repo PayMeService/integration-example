@@ -66,14 +66,6 @@
             font-weight: 500;
         }
 
-        .status.success {
-            color: #28a745;
-        }
-
-        .status.error {
-            color: #dc3545;
-        }
-
         .payment-section {
             text-align: center;
             padding: 30px 0;
@@ -157,7 +149,6 @@
             <h1>{{title}}</h1>
         </div>
 
-        {{#if success}}
         <div class="sale-info">
             <div class="info-item">
                 <div class="info-label">Sale ID</div>
@@ -165,25 +156,8 @@
             </div>
 
             <div class="info-item">
-                <div class="info-label">Amount</div>
-                <div class="info-value">{{price}} {{currency}}</div>
-            </div>
-
-            <div class="info-item">
-                <div class="info-label">Product</div>
-                <div class="info-value">{{product_name}}</div>
-            </div>
-
-            <div class="info-item">
                 <div class="info-label">Payment Method</div>
                 <div class="info-value">Apple Pay</div>
-            </div>
-
-            <div class="info-item">
-                <div class="info-label">Status</div>
-                <div class="info-value">
-                    <span class="status success">Ready ({{status_code}})</span>
-                </div>
             </div>
         </div>
 
@@ -215,14 +189,8 @@
             <pre id="console-output"></pre>
         </div>
 
-        {{else}}
-        <div class="error-message">
-            <strong>Error:</strong> {{error_message}}
-        </div>
-        {{/if}}
-
         <div style="text-align: center;">
-            <a href="/generate-sale-form" class="back-button">Back to Form</a>
+            <a href="/" class="back-button">Back to Home</a>
         </div>
     </div>
 
@@ -253,8 +221,6 @@
             log('SUCCESS: ' + message);
         }
 
-        // Only initialize if sale was created successfully
-        {{#if success}}
         (function initializeApplePay() {
             log('Initializing Apple Pay integration...');
             availabilityCheck.classList.remove('hidden');
@@ -361,7 +327,6 @@
                     showError(`Failed to initialize PayMe: ${error.message}`);
                 });
         })();
-        {{/if}}
     </script>
 </body>
 </html>

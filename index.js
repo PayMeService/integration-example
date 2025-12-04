@@ -47,7 +47,7 @@ app.get('/.well-known/apple-developer-merchantid-domain-association', saleContro
 // Protected Routes (require defaults)
 app.get('/sale', requireDefaults, indexController.showSale);
 app.get('/sale/:saleId', requireDefaults, saleController.getSaleById);
-app.get('/apple-pay-sale/:saleId', requireDefaults, saleController.getApplePaySaleById);
+app.get('/apple-pay-sale/:saleId', requireDefaults, applePayController.getApplePaySaleById);
 app.get('/generate-sale-form', requireDefaults, saleController.getGenerateSaleForm);
 app.post('/generate-sale', requireDefaults, asyncHandler(saleController.generateSale), handleSaleError('sale'));
 app.post('/generate-apple-pay-sale', requireDefaults, asyncHandler(applePayController.generateApplePaySale), handleSaleError('apple-pay'));

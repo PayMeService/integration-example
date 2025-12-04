@@ -1,0 +1,68 @@
+<div class="container form-container">
+    <div class="form-wrapper">
+        <h1>PayMe Payment Wrapper</h1>
+
+        <div class="nav-section">
+            <h2>Actions</h2>
+            <div class="nav-buttons">
+                <a href="/generate-sale-form" class="btn btn-primary btn-large">Generate Sale</a>
+                <a href="/vas-enable-form" class="btn btn-secondary btn-large">Enable VAS</a>
+                <a href="/vas-update-form" class="btn btn-secondary btn-large">Update VAS</a>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <h2>Show Sale</h2>
+            <form action="/sale" method="GET" class="inline-form">
+                <div class="form-group">
+                    <input type="text" id="saleId" name="saleId" placeholder="Enter Sale ID" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Show Sale</button>
+            </form>
+        </div>
+
+        <div class="nav-section">
+            <h2>Defaults</h2>
+            <form action="/defaults" method="POST">
+                <div class="form-group">
+                    <label for="server">Server URL</label>
+                    <input type="text" id="server" name="server" value="{{defaults.server}}" placeholder="e.g., https://api.payme.io">
+                </div>
+
+                <div class="form-group">
+                    <label for="partner_key">Partner Key</label>
+                    <input type="text" id="partner_key" name="partner_key" value="{{defaults.partner_key}}" placeholder="e.g., limudnaim">
+                </div>
+
+                <div class="form-group">
+                    <label for="seller_payme_id">Default Seller PayMe ID (MPL)</label>
+                    <input type="text" id="seller_payme_id" name="seller_payme_id" value="{{defaults.seller_payme_id}}" placeholder="e.g., MPL15945-65095XWV-IDJWWWM4-QGHYDP7D">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Defaults</button>
+            </form>
+
+            {{#if saved}}
+            <div class="success-message">Defaults saved successfully!</div>
+            {{/if}}
+        </div>
+
+        <div class="nav-section current-defaults">
+            <h2>Current Settings</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <span class="setting-label">Server:</span>
+                    <span class="setting-value">{{#if defaults.server}}{{defaults.server}}{{else}}<em>Using env: CORE_API_URL</em>{{/if}}</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Partner Key:</span>
+                    <span class="setting-value">{{#if defaults.partner_key}}{{defaults.partner_key}}{{else}}<em>Not set</em>{{/if}}</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Default MPL:</span>
+                    <span class="setting-value">{{#if defaults.seller_payme_id}}{{defaults.seller_payme_id}}{{else}}<em>Using env: DEFAULT_SELLER_PAYME_ID</em>{{/if}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

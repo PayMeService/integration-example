@@ -1,0 +1,23 @@
+<div class="container form-container">
+    <div class="form-wrapper">
+        <h1>VAS {{action}} Result</h1>
+
+        <div class="result-status" style="text-align: center; margin-bottom: 20px;">
+            {{#if success}}
+            <span class="status success">Success</span>
+            {{else}}
+            <span class="status error">Error</span>
+            {{/if}}
+        </div>
+
+        <div class="form-group">
+            <label>Response</label>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 10px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; border: 2px solid #e0e0e0;">{{result}}</pre>
+        </div>
+
+        <div class="button-group">
+            <a href="/vas-enable-form" class="btn btn-primary" style="text-align: center;">Enable VAS</a>
+            <a href="/vas-update-form" class="btn btn-secondary" style="text-align: center;">Update VAS</a>
+        </div>
+    </div>
+</div>

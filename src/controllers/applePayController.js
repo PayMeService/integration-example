@@ -23,7 +23,7 @@ const getApplePaySaleById = (req, res) => {
     title: `Apple Pay - ${saleId}`,
     payme_sale_id: saleId,
     sale_url: saleUrl,
-    apiKey: defaults.partner_key,
+    apiKey: defaults.public_key,
     merchantId: defaults.apple_pay_merchant_id,
     testMode: process.env.PAYME_TEST_MODE === 'true'
   });
@@ -39,15 +39,12 @@ const generateApplePaySale = async (req, res) => {
     sale_type
   } = req.body;
 
-  const apiKey = defaults.partner_key;
-  const merchantId = defaults.apple_pay_merchant_id;
-
-  if (!apiKey) {
-    throw new Error('PayMe API Key is required for Apple Pay');
+  if (!defaults.apple_pay_merchant_id) {
+    throw new Error('Apple Pay Merchant ID is required for Apple Pay');
   }
 
-  if (!merchantId) {
-    throw new Error('Apple Pay Merchant ID is required for Apple Pay');
+  if (!defaults.public_key) {
+    throw new Error('Public Key is required for Apple Pay');
   }
 
   const payload = {
@@ -68,8 +65,8 @@ const generateApplePaySale = async (req, res) => {
     title: `Apple Pay - ${data.payme_sale_id || 'Generated'}`,
     payme_sale_id: data.payme_sale_id,
     sale_url: data.sale_url,
-    apiKey: apiKey,
-    merchantId: merchantId,
+    apiKey: defaults.public_key,
+    merchantId: defaults.apple_pay_merchant_id,
     testMode: process.env.PAYME_TEST_MODE === 'true'
   });
 };

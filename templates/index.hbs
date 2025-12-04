@@ -29,6 +29,11 @@
                     <input type="text" id="apple_pay_merchant_id" name="apple_pay_merchant_id" value="{{defaults.apple_pay_merchant_id}}" placeholder="e.g., merchant.paymeproduction">
                 </div>
 
+                <div class="form-group">
+                    <label for="public_key">Public Key <span class="optional-label">(Optional - for Apple Pay)</span></label>
+                    <input type="text" id="public_key" name="public_key" value="{{defaults.public_key}}" placeholder="Public API key for Apple Pay">
+                </div>
+
                 <button type="submit" class="btn btn-primary">Save Defaults</button>
             </form>
 
@@ -102,6 +107,10 @@
                 <div class="setting-item">
                     <span class="setting-label">Apple Pay Merchant ID:</span>
                     <span class="setting-value">{{#if defaults.apple_pay_merchant_id}}{{defaults.apple_pay_merchant_id}}{{else}}<em>Not set (optional)</em>{{/if}}</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Public Key:</span>
+                    <span class="setting-value">{{#if defaults.public_key}}{{defaults.public_key}}{{else}}<em>Not set (optional)</em>{{/if}}</span>
                 </div>
             </div>
         </div>

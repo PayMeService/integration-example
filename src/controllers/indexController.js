@@ -15,13 +15,14 @@ const getIndex = (req, res) => {
 };
 
 const saveDefaults = (req, res) => {
-  const { server, partner_key, seller_payme_id, apple_pay_merchant_id } = req.body;
+  const { server, partner_key, seller_payme_id, apple_pay_merchant_id, public_key } = req.body;
 
   req.session.defaults = {
     server: server || '',
     partner_key: partner_key || '',
     seller_payme_id: seller_payme_id || '',
-    apple_pay_merchant_id: apple_pay_merchant_id || ''
+    apple_pay_merchant_id: apple_pay_merchant_id || '',
+    public_key: public_key || ''
   };
 
   res.redirect('/?saved=true');

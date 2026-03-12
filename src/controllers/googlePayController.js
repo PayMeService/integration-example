@@ -1,5 +1,6 @@
 const coreService = require('../services/coreService');
 const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { getTestMode } = require('../utils/testMode');
 
 const getDefaults = (req) => req.session?.defaults || {};
 
@@ -26,7 +27,7 @@ const getGooglePaySaleById = (req, res) => {
     sale_url: saleUrl,
     apiKey: defaults.public_key,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: process.env.PAYME_TEST_MODE === 'true'
+    testMode: getTestMode(defaults)
   });
 };
 
@@ -64,7 +65,7 @@ const generateGooglePaySale = async (req, res) => {
     sale_url: data.sale_url,
     apiKey: defaults.public_key,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: process.env.PAYME_TEST_MODE === 'true'
+    testMode: getTestMode(defaults)
   });
 };
 

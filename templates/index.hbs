@@ -44,6 +44,13 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <input type="checkbox" id="test_mode" name="test_mode" style="width: auto; margin: 0;" {{#if defaults.test_mode}}checked{{/if}}>
+                        Use test mode (Apple Pay / Google Pay)
+                    </label>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Save Defaults</button>
             </form>
 
@@ -140,6 +147,10 @@
                 <div class="setting-item">
                     <span class="setting-label">PayMe SDK URL:</span>
                     <span class="setting-value">{{paymeSdkUrl}}</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Test Mode:</span>
+                    <span class="setting-value">{{#if defaults.test_mode}}Enabled{{else}}Disabled{{/if}}</span>
                 </div>
             </div>
         </div>

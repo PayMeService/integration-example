@@ -1,11 +1,18 @@
 const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { parseBoolean } = require('../utils/boolean');
+const { getTestMode } = require('../utils/testMode');
 
 const isDefaultsComplete = (defaults) => {
   return !!(defaults?.server && defaults?.partner_key && defaults?.seller_payme_id);
 };
 
 const getIndex = (req, res) => {
-  const defaults = req.session?.defaults || {};
+  const sessionDefaults = req.session?.defaults || {};
+  const defaults = {
+    ...sessionDefaults,
+    use_staging_sdk: parseBoolean(sessionDefaults.use_staging_sdk, false),
+    test_mode: getTestMode(sessionDefaults)
+  };
 
   res.render('index', {
     title: 'PayMe Payment Wrapper',
@@ -26,7 +33,8 @@ const saveDefaults = (req, res) => {
     seller_payme_id,
     apple_pay_merchant_id,
     public_key,
-    use_staging_sdk
+    use_staging_sdk,
+    test_mode
   } = req.body;
 
   req.session.defaults = {
@@ -35,7 +43,8 @@ const saveDefaults = (req, res) => {
     seller_payme_id: seller_payme_id || '',
     apple_pay_merchant_id: apple_pay_merchant_id || '',
     public_key: public_key || '',
-    use_staging_sdk: use_staging_sdk === 'on' || use_staging_sdk === true || use_staging_sdk === 'true'
+    use_staging_sdk: parseBoolean(use_staging_sdk, false),
+    test_mode: parseBoolean(test_mode, false)
   };
 
   res.redirect('/?saved=true');

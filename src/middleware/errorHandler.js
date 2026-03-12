@@ -1,4 +1,5 @@
 const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { getTestMode } = require('../utils/testMode');
 
 const handleSaleError = (template) => {
   return (err, req, res, next) => {
@@ -27,7 +28,7 @@ const handleSaleError = (template) => {
         apiKey,
         merchantId,
         paymeSdkUrl: getPayMeSdkUrl(defaults),
-        testMode: process.env.PAYME_TEST_MODE === 'true'
+        testMode: getTestMode(defaults)
       });
     }
 
@@ -39,7 +40,7 @@ const handleSaleError = (template) => {
         ...baseErrorData,
         apiKey,
         paymeSdkUrl: getPayMeSdkUrl(defaults),
-        testMode: process.env.PAYME_TEST_MODE === 'true'
+        testMode: getTestMode(defaults)
       });
     }
 

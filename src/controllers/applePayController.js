@@ -1,5 +1,6 @@
 const coreService = require('../services/coreService');
 const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { getTestMode } = require('../utils/testMode');
 
 const getDefaults = (req) => req.session?.defaults || {};
 
@@ -27,7 +28,7 @@ const getApplePaySaleById = (req, res) => {
     apiKey: defaults.public_key,
     merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: process.env.PAYME_TEST_MODE === 'true'
+    testMode: getTestMode(defaults)
   });
 };
 
@@ -70,7 +71,7 @@ const generateApplePaySale = async (req, res) => {
     apiKey: defaults.public_key,
     merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: process.env.PAYME_TEST_MODE === 'true'
+    testMode: getTestMode(defaults)
   });
 };
 

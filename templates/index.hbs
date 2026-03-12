@@ -70,15 +70,17 @@
 
         <div class="nav-section">
             <h2>Show Sale</h2>
-            <div class="form-group">
-                <input type="text" id="saleId" placeholder="Enter Sale ID" {{#unless defaultsComplete}}disabled{{/unless}}>
+            <div class="inline-form">
+                <div class="form-group">
+                    <input type="text" id="saleId" placeholder="Enter Sale ID" {{#unless defaultsComplete}}disabled{{/unless}}>
+                </div>
+                <button type="button" class="btn btn-primary" id="showSaleBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Show</button>
             </div>
             <div class="button-group">
-                <button type="button" class="btn btn-primary" id="showSaleBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Show Sale</button>
                 {{#if applePayEnabled}}
-                <button type="button" class="btn-apple-pay" id="showApplePayBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Apple Pay</button>
+                <button type="button" class="btn btn-primary" id="showApplePayBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Apple Pay</button>
                 {{else}}
-                <button type="button" class="btn-apple-pay btn-apple-pay-disabled" disabled title="Set Apple Pay Merchant ID in defaults to enable">Apple Pay</button>
+                <button type="button" class="btn btn-disabled" disabled title="Set Apple Pay Merchant ID in defaults to enable">Apple Pay</button>
                 {{/if}}
                 {{#if googlePayEnabled}}
                 <button type="button" class="btn btn-primary" id="showGooglePayBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Google Pay</button>

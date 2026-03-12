@@ -1,7 +1,11 @@
+const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+
 const handleSaleError = (template) => {
   return (err, req, res, next) => {
     console.error(`Error generating sale:`, err.message);
     console.error('Error details:', err.response?.data || err);
+
+    const defaults = req.session?.defaults || {};
 
     const baseErrorData = {
       success: false,
@@ -14,14 +18,27 @@ const handleSaleError = (template) => {
     };
 
     if (template === 'apple-pay') {
-      const apiKey = req.body.payme_api_key || process.env.PAYME_API_KEY || '';
-      const merchantId = req.body.apple_pay_merchant_id || process.env.APPLE_PAY_MERCHANT_ID || '';
+      const apiKey = defaults.public_key || process.env.PAYME_API_KEY || '';
+      const merchantId = defaults.apple_pay_merchant_id || process.env.APPLE_PAY_MERCHANT_ID || '';
 
       return res.status(500).render('apple-pay', {
         title: 'Apple Pay - Error',
         ...baseErrorData,
-        apiKey: apiKey,
-        merchantId: merchantId,
+        apiKey,
+        merchantId,
+        paymeSdkUrl: getPayMeSdkUrl(defaults),
+        testMode: process.env.PAYME_TEST_MODE === 'true'
+      });
+    }
+
+    if (template === 'google-pay') {
+      const apiKey = defaults.public_key || process.env.PAYME_API_KEY || '';
+
+      return res.status(500).render('google-pay', {
+        title: 'Google Pay - Error',
+        ...baseErrorData,
+        apiKey,
+        paymeSdkUrl: getPayMeSdkUrl(defaults),
         testMode: process.env.PAYME_TEST_MODE === 'true'
       });
     }
@@ -47,7 +64,7 @@ const handleVasError = (action) => {
 
     res.status(500).render('vas-result', {
       title: `VAS ${action} Result`,
-      action: action,
+      action,
       success: false,
       result: JSON.stringify(errorResponse, null, 2)
     });

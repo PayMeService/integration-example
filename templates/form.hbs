@@ -57,12 +57,20 @@
                 {{else}}
                 <button type="button" class="btn-apple-pay btn-apple-pay-disabled" disabled title="Set Apple Pay Merchant ID in defaults to enable">Apple Pay</button>
                 {{/if}}
+                {{#if googlePayEnabled}}
+                <button type="submit" formaction="/generate-google-pay-sale" class="btn-primary">Google Pay</button>
+                {{else}}
+                <button type="button" class="btn-disabled" disabled title="Set Public Key in defaults to enable">Google Pay</button>
+                {{/if}}
             </div>
         </form>
 
-        <p class="info-text">Choose your payment method: Generate Sale for standard payment or Apple Pay for Apple payment</p>
+        <p class="info-text">Choose your payment method: Generate Sale for standard payment, Apple Pay, or Google Pay.</p>
         {{#unless applePayEnabled}}
         <p class="info-text" style="color: #888;">Apple Pay is disabled. Set Apple Pay Merchant ID in defaults to enable.</p>
+        {{/unless}}
+        {{#unless googlePayEnabled}}
+        <p class="info-text" style="color: #888;">Google Pay is disabled. Set Public Key in defaults to enable.</p>
         {{/unless}}
 
         <p class="info-text">

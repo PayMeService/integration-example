@@ -17,7 +17,8 @@ const getGenerateSaleForm = (req, res) => {
   const defaults = getDefaults(req);
   res.render('form', {
     title: 'Generate PayMe Sale',
-    applePayEnabled: !!defaults.apple_pay_merchant_id
+    applePayEnabled: !!defaults.apple_pay_merchant_id,
+    googlePayEnabled: !!defaults.public_key
   });
 };
 
@@ -36,8 +37,8 @@ const getSaleById = (req, res) => {
 
   res.render('sale-view', {
     title: `Sale ${saleId}`,
-    saleId: saleId,
-    saleUrl: saleUrl
+    saleId,
+    saleUrl
   });
 };
 
@@ -54,7 +55,7 @@ const generateSale = async (req, res) => {
 
   const payload = {
     seller_payme_id: defaults.seller_payme_id,
-    sale_price: sale_price,
+    sale_price,
     currency: currency || 'ILS',
     product_name: product_name || 'Test Product',
     language: language || 'en',

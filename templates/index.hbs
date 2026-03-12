@@ -30,8 +30,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="public_key">Public Key <span class="optional-label">(Optional - for Apple Pay)</span></label>
-                    <input type="text" id="public_key" name="public_key" value="{{defaults.public_key}}" placeholder="Public API key for Apple Pay">
+                    <label for="public_key">Public Key <span class="optional-label">(Optional - for Apple Pay / Google Pay)</span></label>
+                    <input type="text" id="public_key" name="public_key" value="{{defaults.public_key}}" placeholder="Public API key for Apple Pay / Google Pay">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <input type="checkbox" id="use_staging_sdk" name="use_staging_sdk" style="width: auto; margin: 0;" {{#if defaults.use_staging_sdk}}checked{{/if}}>
+                        Use staging SDK URL
+                    </label>
+                    <div class="info-text" style="text-align: left; margin-top: 0;">
+                        Selected SDK: <strong>{{paymeSdkUrl}}</strong>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save Defaults</button>
@@ -70,6 +80,11 @@
                 {{else}}
                 <button type="button" class="btn-apple-pay btn-apple-pay-disabled" disabled title="Set Apple Pay Merchant ID in defaults to enable">Apple Pay</button>
                 {{/if}}
+                {{#if googlePayEnabled}}
+                <button type="button" class="btn btn-primary" id="showGooglePayBtn" {{#unless defaultsComplete}}disabled{{/unless}}>Google Pay</button>
+                {{else}}
+                <button type="button" class="btn btn-disabled" disabled title="Set Public Key in defaults to enable">Google Pay</button>
+                {{/if}}
             </div>
             <script>
                 document.getElementById('showSaleBtn').addEventListener('click', function() {
@@ -83,6 +98,14 @@
                     var saleId = document.getElementById('saleId').value;
                     if (saleId) {
                         window.location.href = '/apple-pay-sale/' + encodeURIComponent(saleId);
+                    }
+                });
+                {{/if}}
+                {{#if googlePayEnabled}}
+                document.getElementById('showGooglePayBtn').addEventListener('click', function() {
+                    var saleId = document.getElementById('saleId').value;
+                    if (saleId) {
+                        window.location.href = '/google-pay-sale/' + encodeURIComponent(saleId);
                     }
                 });
                 {{/if}}
@@ -111,6 +134,10 @@
                 <div class="setting-item">
                     <span class="setting-label">Public Key:</span>
                     <span class="setting-value">{{#if defaults.public_key}}{{defaults.public_key}}{{else}}<em>Not set (optional)</em>{{/if}}</span>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">PayMe SDK URL:</span>
+                    <span class="setting-value">{{paymeSdkUrl}}</span>
                 </div>
             </div>
         </div>

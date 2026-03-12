@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
 
-    <!-- Apple Pay SDK - Must be loaded first -->
-    <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
     <!-- PayMe SDK -->
     <script src="{{paymeSdkUrl}}"></script>
 
@@ -69,14 +67,6 @@
         .payment-section {
             text-align: center;
             padding: 30px 0;
-        }
-
-        apple-pay-button {
-            --apple-pay-button-width: 200px;
-            --apple-pay-button-height: 50px;
-            --apple-pay-button-border-radius: 8px;
-            --apple-pay-button-padding: 0px 0px;
-            --apple-pay-button-box-sizing: border-box;
         }
 
         .hidden {
@@ -157,27 +147,27 @@
 
             <div class="info-item">
                 <div class="info-label">Payment Method</div>
-                <div class="info-value">Apple Pay</div>
+                <div class="info-value">Google Pay</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">SDK URL</div>
+                <div class="info-value">{{paymeSdkUrl}}</div>
             </div>
         </div>
 
         <div id="availability-check" class="availability-message hidden">
-            Checking Apple Pay availability...
+            Checking Google Pay availability...
         </div>
 
         <div id="not-available" class="availability-message hidden">
-            Apple Pay is not available on this device/browser. Please use a device that supports Apple Pay.
+            Google Pay is not available on this device/browser.
         </div>
 
         <div class="payment-section">
             <div id="payment-ready" class="hidden">
-                <p>Click the button below to pay with Apple Pay</p>
-                <apple-pay-button
-                    id="pay-with-apple-pay"
-                    buttonstyle="black"
-                    type="buy"
-                    locale="en-US">
-                </apple-pay-button>
+                <p>Click the button below to pay with Google Pay</p>
+                <div id="pay-with-google-pay"></div>
             </div>
         </div>
 
@@ -221,11 +211,10 @@
             log('SUCCESS: ' + message);
         }
 
-        (function initializeApplePay() {
-            log('Initializing Apple Pay integration...');
+        (async function initializeGooglePay() {
+            log('Initializing Google Pay integration...');
             availabilityCheck.classList.remove('hidden');
 
-            // Check Apple Pay availability
             if (!window.PayMe) {
                 availabilityCheck.classList.add('hidden');
                 showError('PayMe SDK not loaded. Please refresh the page.');
@@ -234,98 +223,72 @@
 
             log('PayMe SDK loaded successfully');
 
-            // Check if Apple Pay is available
-            const isAvailable = PayMe.isApplePayAvailable();
-            const isVersionSupported = PayMe.isSupportsApplePayVersion();
-
-            log(`Apple Pay available: ${isAvailable}`);
-            log(`Apple Pay version supported: ${isVersionSupported}`);
-
-            if (isVersionSupported) {
-                log(`Apple Pay API version: ${PayMe.applePayApiVersion}`);
-            }
-
-            availabilityCheck.classList.add('hidden');
-
-            if (!isAvailable || !isVersionSupported) {
-                notAvailable.classList.remove('hidden');
-                log('Apple Pay is not available on this device');
-                return;
-            }
-
-            // Initialize PayMe
             const apiKey = '{{apiKey}}';
-            const merchantId = '{{merchantId}}';
             const saleGuid = '{{payme_sale_id}}';
             const testMode = {{#if testMode}}true{{else}}false{{/if}};
+
+            if (!apiKey) {
+                availabilityCheck.classList.add('hidden');
+                showError('Public Key is missing. Configure it in defaults.');
+                return;
+            }
 
             log(`Initializing PayMe with API key: ${apiKey.substring(0, 8)}...`);
             log(`Test mode: ${testMode}`);
 
-            PayMe.create(apiKey, { testMode: testMode })
-                .then(function(instance) {
-                    log('PayMe instance created successfully');
+            try {
+                const isGooglePayAvailable = await PayMe.isGooglePayAvailable(testMode);
+                log(`Google Pay available: ${isGooglePayAvailable}`);
 
-                    // Create Apple Sale
-                    const saleConfig = {
-                        debugFn: function(message) {
-                            log(`[PayMe Debug] ${message}`);
-                        },
-                        merchantId: merchantId,
-                        saleGuid: saleGuid
-                    };
+                availabilityCheck.classList.add('hidden');
 
-                    log(`Creating Apple Sale with merchant ID: ${merchantId}`);
-                    log(`Sale GUID: ${saleGuid}`);
+                if (!isGooglePayAvailable) {
+                    notAvailable.classList.remove('hidden');
+                    return;
+                }
 
-                    const appleSale = instance.appleSale(saleConfig);
+                const instance = await PayMe.create(apiKey, { testMode: testMode });
+                log('PayMe instance created successfully');
 
-                    // Configure interaction callbacks
-                    const interactionConfig = {
-                        payButtonSelector: '#pay-with-apple-pay',
-
-                        canceled: function() {
-                            log('Payment was cancelled by user');
-                            showError('Payment was cancelled. You can try again by clicking the Apple Pay button.');
-                        },
-
-                        validated: function(err) {
-                            if (err) {
-                                log(`Validation error: ${err.message}`);
-                                showError(`Validation error: ${err.message}`);
-                            } else {
-                                log('Payment validated successfully');
-                            }
-                        },
-
-                        paymentCompleted: function(err, sale) {
-                            if (err) {
-                                log(`Payment failed: ${err.message}`);
-                                showError(`Payment failed: ${err.message}`);
-                            } else {
-                                log('Payment completed successfully!');
-                                log(`Sale details: ${JSON.stringify(sale, null, 2)}`);
-                                showSuccess('Payment completed successfully! ' + JSON.stringify(sale, null, 2));
-                            }
-                        }
-                    };
-
-                    log('Initializing Apple Pay button...');
-
-                    appleSale.letsRock(interactionConfig)
-                        .then(function() {
-                            log('Apple Pay button initialized and ready');
-                            paymentReady.classList.remove('hidden');
-                        })
-                        .catch(function(err) {
-                            log(`Apple Pay initialization error: ${err.message}`);
-                            showError(`Apple Pay initialization failed: ${err.message}`);
-                        });
-                })
-                .catch(function(error) {
-                    log(`PayMe initialization error: ${error.message}`);
-                    showError(`Failed to initialize PayMe: ${error.message}`);
+                const googleSale = instance.googleSale({
+                    saleGuid: saleGuid,
+                    debugFn: function(message) {
+                        log(`[PayMe Debug] ${message}`);
+                    }
                 });
+
+                const interactionConfig = {
+                    payButtonSelector: '#pay-with-google-pay',
+                    buttonType: 'buy',
+                    buttonColor: 'default',
+
+                    canceled: function() {
+                        log('Payment was cancelled by user');
+                        showError('Payment was cancelled. You can try again by clicking the Google Pay button.');
+                    },
+
+                    paymentCompleted: function(err, sale) {
+                        if (err) {
+                            log(`Payment failed: ${err.message}`);
+                            showError(`Payment failed: ${err.message}`);
+                        } else {
+                            log('Payment completed successfully!');
+                            log(`Sale details: ${JSON.stringify(sale, null, 2)}`);
+                            showSuccess('Payment completed successfully! ' + JSON.stringify(sale, null, 2));
+                        }
+                    }
+                };
+
+                log('Initializing Google Pay button...');
+
+                await googleSale.letsRock(interactionConfig);
+                log('Google Pay button initialized and ready');
+                paymentReady.classList.remove('hidden');
+            } catch (error) {
+                availabilityCheck.classList.add('hidden');
+                log(`Initialization error: ${error.message}`);
+                showError(`Failed to initialize Google Pay: ${error.message}`);
+            }
         })();
     </script>
 </body>

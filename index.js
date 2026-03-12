@@ -9,6 +9,7 @@ require('dotenv').config();
 const indexController = require('./src/controllers/indexController');
 const saleController = require('./src/controllers/saleController');
 const applePayController = require('./src/controllers/applePayController');
+const googlePayController = require('./src/controllers/googlePayController');
 const vasController = require('./src/controllers/vasController');
 const { handleSaleError, handleVasError, asyncHandler } = require('./src/middleware/errorHandler');
 const { requireDefaults } = require('./src/middleware/requireDefaults');
@@ -48,9 +49,11 @@ app.get('/.well-known/apple-developer-merchantid-domain-association', saleContro
 app.get('/sale', requireDefaults, indexController.showSale);
 app.get('/sale/:saleId', requireDefaults, saleController.getSaleById);
 app.get('/apple-pay-sale/:saleId', requireDefaults, applePayController.getApplePaySaleById);
+app.get('/google-pay-sale/:saleId', requireDefaults, googlePayController.getGooglePaySaleById);
 app.get('/generate-sale-form', requireDefaults, saleController.getGenerateSaleForm);
 app.post('/generate-sale', requireDefaults, asyncHandler(saleController.generateSale), handleSaleError('sale'));
 app.post('/generate-apple-pay-sale', requireDefaults, asyncHandler(applePayController.generateApplePaySale), handleSaleError('apple-pay'));
+app.post('/generate-google-pay-sale', requireDefaults, asyncHandler(googlePayController.generateGooglePaySale), handleSaleError('google-pay'));
 
 // VAS Routes (require defaults)
 app.get('/vas-enable-form', requireDefaults, vasController.getVasEnableForm);

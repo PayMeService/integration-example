@@ -1,28 +1,41 @@
+const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+
 const isDefaultsComplete = (defaults) => {
   return !!(defaults?.server && defaults?.partner_key && defaults?.seller_payme_id);
 };
 
 const getIndex = (req, res) => {
   const defaults = req.session?.defaults || {};
+
   res.render('index', {
     title: 'PayMe Payment Wrapper',
-    defaults: defaults,
+    defaults,
     defaultsComplete: isDefaultsComplete(defaults),
     applePayEnabled: !!defaults.apple_pay_merchant_id,
+    googlePayEnabled: !!defaults.public_key,
+    paymeSdkUrl: getPayMeSdkUrl(defaults),
     saved: req.query.saved === 'true',
     missing: req.query.missing === 'true'
   });
 };
 
 const saveDefaults = (req, res) => {
-  const { server, partner_key, seller_payme_id, apple_pay_merchant_id, public_key } = req.body;
+  const {
+    server,
+    partner_key,
+    seller_payme_id,
+    apple_pay_merchant_id,
+    public_key,
+    use_staging_sdk
+  } = req.body;
 
   req.session.defaults = {
     server: server || '',
     partner_key: partner_key || '',
     seller_payme_id: seller_payme_id || '',
     apple_pay_merchant_id: apple_pay_merchant_id || '',
-    public_key: public_key || ''
+    public_key: public_key || '',
+    use_staging_sdk: use_staging_sdk === 'on' || use_staging_sdk === true || use_staging_sdk === 'true'
   };
 
   res.redirect('/?saved=true');

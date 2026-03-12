@@ -3,7 +3,7 @@ const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
 
 const getDefaults = (req) => req.session?.defaults || {};
 
-const getApplePaySaleById = (req, res) => {
+const getGooglePaySaleById = (req, res) => {
   const { saleId } = req.params;
   const defaults = getDefaults(req);
   const serverUrl = defaults.server;
@@ -12,26 +12,25 @@ const getApplePaySaleById = (req, res) => {
     return res.status(500).send('Server URL is not configured');
   }
 
-  if (!defaults.apple_pay_merchant_id) {
-    return res.status(400).send('Apple Pay Merchant ID is not configured');
+  if (!defaults.public_key) {
+    return res.status(400).send('Public Key is not configured');
   }
 
   const saleUrl = `${serverUrl}/sale/generate/${saleId}`;
 
-  console.log('Rendering Apple Pay sale:', saleUrl);
+  console.log('Rendering Google Pay sale:', saleUrl);
 
-  res.render('apple-pay', {
-    title: `Apple Pay - ${saleId}`,
+  res.render('google-pay', {
+    title: `Google Pay - ${saleId}`,
     payme_sale_id: saleId,
     sale_url: saleUrl,
     apiKey: defaults.public_key,
-    merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
     testMode: process.env.PAYME_TEST_MODE === 'true'
   });
 };
 
-const generateApplePaySale = async (req, res) => {
+const generateGooglePaySale = async (req, res) => {
   const defaults = getDefaults(req);
   const {
     sale_price,
@@ -41,12 +40,8 @@ const generateApplePaySale = async (req, res) => {
     sale_type
   } = req.body;
 
-  if (!defaults.apple_pay_merchant_id) {
-    throw new Error('Apple Pay Merchant ID is required for Apple Pay');
-  }
-
   if (!defaults.public_key) {
-    throw new Error('Public Key is required for Apple Pay');
+    throw new Error('Public Key is required for Google Pay');
   }
 
   const payload = {
@@ -55,7 +50,7 @@ const generateApplePaySale = async (req, res) => {
     currency: currency || 'ILS',
     product_name: product_name || 'Test Product',
     language: language || 'en',
-    sale_payment_method: 'apple-pay',
+    sale_payment_method: 'google-pay',
     sale_type: sale_type || 'sale',
     installments: '1'
   };
@@ -63,18 +58,17 @@ const generateApplePaySale = async (req, res) => {
   const serverUrl = defaults.server;
   const data = await coreService.generateSale(payload, serverUrl);
 
-  res.render('apple-pay', {
-    title: `Apple Pay - ${data.payme_sale_id || 'Generated'}`,
+  res.render('google-pay', {
+    title: `Google Pay - ${data.payme_sale_id || 'Generated'}`,
     payme_sale_id: data.payme_sale_id,
     sale_url: data.sale_url,
     apiKey: defaults.public_key,
-    merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: getPayMeSdkUrl(defaults),
     testMode: process.env.PAYME_TEST_MODE === 'true'
   });
 };
 
 module.exports = {
-  getApplePaySaleById,
-  generateApplePaySale
+  getGooglePaySaleById,
+  generateGooglePaySale
 };

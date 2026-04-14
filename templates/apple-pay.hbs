@@ -262,7 +262,7 @@
             log(`Initializing PayMe with API key: ${apiKey.substring(0, 8)}...`);
             log(`Test mode: ${testMode}`);
 
-            PayMe.create(apiKey, { testMode: testMode })
+            PayMe.create(apiKey, { testMode: testMode{{#if apiUrl}}, apiUrl: '{{apiUrl}}'{{/if}} })
                 .then(function(instance) {
                     log('PayMe instance created successfully');
 

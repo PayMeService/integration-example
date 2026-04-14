@@ -1,9 +1,20 @@
 const coreService = require('../services/coreService');
+const { isProdDomain } = require('../utils/domain');
+const { getServerUrl } = require('../utils/serverUrl');
 
-const getDefaults = (req) => req.session?.defaults || {};
+const getDefaults = (req) => {
+  if (!req.session?.defaults) {
+    throw new Error("Defaults are required here!")
+  }
+
+  return req.session?.defaults;
+}
 
 const getAppleCertificate = (req, res) => {
-  const appleCertificate = process.env.APPLE_PAY_CERTIFICATE;
+  const isProd = isProdDomain(req);
+  const appleCertificate = isProd
+    ? process.env.APPLE_PAY_CERTIFICATE_PROD
+    : process.env.APPLE_PAY_CERTIFICATE;
 
   if (!appleCertificate) {
     return res.status(404).send('Apple Pay certificate not configured');
@@ -25,7 +36,7 @@ const getGenerateSaleForm = (req, res) => {
 const getSaleById = (req, res) => {
   const { saleId } = req.params;
   const defaults = getDefaults(req);
-  const serverUrl = defaults.server;
+  const serverUrl = getServerUrl(req, defaults);
 
   if (!serverUrl) {
     return res.status(500).send('Server URL is not configured');
@@ -63,7 +74,7 @@ const generateSale = async (req, res) => {
     sale_type: sale_type || 'sale'
   };
 
-  const serverUrl = defaults.server;
+  const serverUrl = getServerUrl(req, defaults);
   const data = await coreService.generateSale(payload, serverUrl);
 
   res.render('sale', {

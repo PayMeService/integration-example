@@ -9,10 +9,12 @@
         <div class="nav-section">
             <h2>Defaults <span class="required-label">* Required</span></h2>
             <form action="/defaults" method="POST">
+                {{#unless isProd}}
                 <div class="form-group">
                     <label for="server">Server URL *</label>
                     <input type="text" id="server" name="server" value="{{defaults.server}}" placeholder="e.g., https://api.payme.io" required>
                 </div>
+                {{/unless}}
 
                 <div class="form-group">
                     <label for="partner_key">Partner Key *</label>
@@ -34,6 +36,7 @@
                     <input type="text" id="public_key" name="public_key" value="{{defaults.public_key}}" placeholder="Public API key for Apple Pay / Google Pay">
                 </div>
 
+                {{#unless isProd}}
                 <div class="form-group">
                     <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <input type="checkbox" id="use_staging_sdk" name="use_staging_sdk" style="width: auto; margin: 0;" {{#if defaults.use_staging_sdk}}checked{{/if}}>
@@ -43,6 +46,7 @@
                         Selected SDK: <strong>{{paymeSdkUrl}}</strong>
                     </div>
                 </div>
+                {{/unless}}
 
                 <div class="form-group">
                     <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -126,7 +130,7 @@
             <div class="settings-grid">
                 <div class="setting-item">
                     <span class="setting-label">Server:</span>
-                    <span class="setting-value {{#unless defaults.server}}setting-missing{{/unless}}">{{#if defaults.server}}{{defaults.server}}{{else}}<em>Not set</em>{{/if}}</span>
+                    <span class="setting-value {{#unless defaults.server}}setting-missing{{/unless}}">{{#if defaults.server}}{{defaults.server}}{{#if isProd}} <em>(auto)</em>{{/if}}{{else}}<em>Not set</em>{{/if}}</span>
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Partner Key:</span>

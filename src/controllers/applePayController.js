@@ -1,13 +1,16 @@
 const coreService = require('../services/coreService');
-const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { getPayMeSdkUrl, PAYME_SDK_URL_PRODUCTION } = require('../utils/paymeSdkUrl');
 const { getTestMode } = require('../utils/testMode');
+const { isProdDomain } = require('../utils/domain');
+const { getServerUrl, getApiUrl } = require('../utils/serverUrl');
 
 const getDefaults = (req) => req.session?.defaults || {};
 
 const getApplePaySaleById = (req, res) => {
   const { saleId } = req.params;
   const defaults = getDefaults(req);
-  const serverUrl = defaults.server;
+  const isProd = isProdDomain(req);
+  const serverUrl = getServerUrl(req, defaults);
 
   if (!serverUrl) {
     return res.status(500).send('Server URL is not configured');
@@ -27,13 +30,15 @@ const getApplePaySaleById = (req, res) => {
     sale_url: saleUrl,
     apiKey: defaults.public_key,
     merchantId: defaults.apple_pay_merchant_id,
-    paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: getTestMode(defaults)
+    paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
+    testMode: getTestMode(defaults),
+    apiUrl: getApiUrl(req, defaults)
   });
 };
 
 const generateApplePaySale = async (req, res) => {
   const defaults = getDefaults(req);
+  const isProd = isProdDomain(req);
   const {
     sale_price,
     currency,
@@ -61,7 +66,7 @@ const generateApplePaySale = async (req, res) => {
     installments: '1'
   };
 
-  const serverUrl = defaults.server;
+  const serverUrl = getServerUrl(req, defaults);
   const data = await coreService.generateSale(payload, serverUrl);
 
   res.render('apple-pay', {
@@ -70,8 +75,9 @@ const generateApplePaySale = async (req, res) => {
     sale_url: data.sale_url,
     apiKey: defaults.public_key,
     merchantId: defaults.apple_pay_merchant_id,
-    paymeSdkUrl: getPayMeSdkUrl(defaults),
-    testMode: getTestMode(defaults)
+    paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
+    testMode: getTestMode(defaults),
+    apiUrl: getApiUrl(req, defaults)
   });
 };
 

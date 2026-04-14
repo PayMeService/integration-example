@@ -1,5 +1,7 @@
-const { getPayMeSdkUrl } = require('../utils/paymeSdkUrl');
+const { getPayMeSdkUrl, PAYME_SDK_URL_PRODUCTION } = require('../utils/paymeSdkUrl');
 const { getTestMode } = require('../utils/testMode');
+const { isProdDomain } = require('../utils/domain');
+const { getApiUrl } = require('../utils/serverUrl');
 
 const handleSaleError = (template) => {
   return (err, req, res, next) => {
@@ -7,6 +9,7 @@ const handleSaleError = (template) => {
     console.error('Error details:', err.response?.data || err);
 
     const defaults = req.session?.defaults || {};
+    const isProd = isProdDomain(req);
 
     const baseErrorData = {
       success: false,
@@ -27,8 +30,9 @@ const handleSaleError = (template) => {
         ...baseErrorData,
         apiKey,
         merchantId,
-        paymeSdkUrl: getPayMeSdkUrl(defaults),
-        testMode: getTestMode(defaults)
+        paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
+        testMode: getTestMode(defaults),
+        apiUrl: getApiUrl(req, defaults)
       });
     }
 
@@ -39,8 +43,9 @@ const handleSaleError = (template) => {
         title: 'Google Pay - Error',
         ...baseErrorData,
         apiKey,
-        paymeSdkUrl: getPayMeSdkUrl(defaults),
-        testMode: getTestMode(defaults)
+        paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
+        testMode: getTestMode(defaults),
+        apiUrl: getApiUrl(req, defaults)
       });
     }
 

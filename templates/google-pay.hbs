@@ -247,7 +247,7 @@
                     return;
                 }
 
-                const instance = await PayMe.create(apiKey, { testMode: testMode });
+                const instance = await PayMe.create(apiKey, { testMode: testMode{{#if apiUrl}}, apiUrl: '{{apiUrl}}'{{/if}} });
                 log('PayMe instance created successfully');
 
                 const googleSale = instance.googleSale({

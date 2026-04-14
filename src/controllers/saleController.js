@@ -2,7 +2,13 @@ const coreService = require('../services/coreService');
 const { isProdDomain } = require('../utils/domain');
 const { getServerUrl } = require('../utils/serverUrl');
 
-const getDefaults = (req) => req.session?.defaults || {};
+const getDefaults = (req) => {
+  if (!req.session?.defaults) {
+    throw new Error("Defaults are required here!")
+  }
+
+  return req.session?.defaults;
+}
 
 const getAppleCertificate = (req, res) => {
   const isProd = isProdDomain(req);

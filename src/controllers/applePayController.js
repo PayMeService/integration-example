@@ -2,7 +2,7 @@ const coreService = require('../services/coreService');
 const { getPayMeSdkUrl, PAYME_SDK_URL_PRODUCTION } = require('../utils/paymeSdkUrl');
 const { getTestMode } = require('../utils/testMode');
 const { isProdDomain } = require('../utils/domain');
-const { getServerUrl, getApiUrl } = require('../utils/serverUrl');
+const { getServerUrl } = require('../utils/serverUrl');
 
 const getDefaults = (req) => req.session?.defaults || {};
 
@@ -32,7 +32,7 @@ const getApplePaySaleById = (req, res) => {
     merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: getApiUrl(req, defaults)
+    apiUrl: serverUrl
   });
 };
 

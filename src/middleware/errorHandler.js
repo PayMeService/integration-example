@@ -1,7 +1,7 @@
 const { getPayMeSdkUrl, PAYME_SDK_URL_PRODUCTION } = require('../utils/paymeSdkUrl');
 const { getTestMode } = require('../utils/testMode');
 const { isProdDomain } = require('../utils/domain');
-const { getApiUrl } = require('../utils/serverUrl');
+const { getServerUrl } = require('../utils/serverUrl');
 
 const handleSaleError = (template) => {
   return (err, req, res, next) => {
@@ -32,7 +32,7 @@ const handleSaleError = (template) => {
         merchantId,
         paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
         testMode: getTestMode(defaults),
-        apiUrl: getApiUrl(req, defaults)
+        apiUrl: getServerUrl(req, defaults)
       });
     }
 

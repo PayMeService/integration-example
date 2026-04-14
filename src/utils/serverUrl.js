@@ -11,16 +11,6 @@ const getServerUrl = (req, defaults = {}) => {
   return defaults.server;
 };
 
-const getApiUrl = (req, defaults = {}) => {
-  if (isProdDomain(req)) {
-    return getTestMode(defaults) ? SANDBOX_URL : null;
-  }
-  return defaults.server || null;
-};
-
 module.exports = {
   getServerUrl,
-  getApiUrl,
-  PROD_URL,
-  SANDBOX_URL
 };

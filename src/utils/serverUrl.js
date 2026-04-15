@@ -1,7 +1,7 @@
 const { isProdDomain } = require('./domain');
 const { getTestMode } = require('./testMode');
 
-const PROD_URL = 'https://payme.io';
+const PROD_URL = 'https://live.payme.io';
 const SANDBOX_URL = 'https://sandbox.payme.io';
 
 const getServerUrl = (req, defaults = {}) => {

@@ -12,10 +12,24 @@ const requireDefaults = (req, res, next) => {
   }
 
   const hasServer = !!defaults.server;
-  const hasPartnerKey = !!defaults.partner_key;
   const hasSellerPaymeId = !!defaults.seller_payme_id;
 
-  if (!hasServer || !hasPartnerKey || !hasSellerPaymeId) {
+  if (!hasServer || !hasSellerPaymeId) {
+    return res.redirect('/?missing=true');
+  }
+
+  next();
+};
+
+const requireVasDefaults = (req, res, next) => {
+  const defaults = req.session?.defaults || {};
+
+  if (isProdDomain(req) && !defaults.server) {
+    defaults.server = getServerUrl(req, defaults);
+    req.session.defaults = defaults;
+  }
+
+  if (!defaults.server || !defaults.seller_payme_id || !defaults.partner_key) {
     return res.redirect('/?missing=true');
   }
 
@@ -23,5 +37,6 @@ const requireDefaults = (req, res, next) => {
 };
 
 module.exports = {
-  requireDefaults
+  requireDefaults,
+  requireVasDefaults
 };

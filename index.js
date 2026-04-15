@@ -12,7 +12,7 @@ const applePayController = require('./src/controllers/applePayController');
 const googlePayController = require('./src/controllers/googlePayController');
 const vasController = require('./src/controllers/vasController');
 const { handleSaleError, handleVasError, asyncHandler } = require('./src/middleware/errorHandler');
-const { requireDefaults } = require('./src/middleware/requireDefaults');
+const { requireDefaults, requireVasDefaults } = require('./src/middleware/requireDefaults');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,10 +56,10 @@ app.post('/generate-apple-pay-sale', requireDefaults, asyncHandler(applePayContr
 app.post('/generate-google-pay-sale', requireDefaults, asyncHandler(googlePayController.generateGooglePaySale), handleSaleError('google-pay'));
 
 // VAS Routes (require defaults)
-app.get('/vas-enable-form', requireDefaults, vasController.getVasEnableForm);
-app.get('/vas-update-form', requireDefaults, vasController.getVasUpdateForm);
-app.post('/vas-enable', requireDefaults, asyncHandler(vasController.enableVas), handleVasError('Enable'));
-app.post('/vas-update', requireDefaults, asyncHandler(vasController.updateVas), handleVasError('Update'));
+app.get('/vas-enable-form', requireVasDefaults, vasController.getVasEnableForm);
+app.get('/vas-update-form', requireVasDefaults, vasController.getVasUpdateForm);
+app.post('/vas-enable', requireVasDefaults, asyncHandler(vasController.enableVas), handleVasError('Enable'));
+app.post('/vas-update', requireVasDefaults, asyncHandler(vasController.updateVas), handleVasError('Update'));
 
 app.listen(PORT, () => {
   console.log(`Payment wrapper server running on port ${PORT}`);

@@ -17,8 +17,8 @@
                 {{/unless}}
 
                 <div class="form-group">
-                    <label for="partner_key">Partner Key *</label>
-                    <input type="text" id="partner_key" name="partner_key" value="{{defaults.partner_key}}" placeholder="e.g., testparnerkey" required>
+                    <label for="partner_key">Partner Key <span class="optional-label">(Optional - for VAS)</span></label>
+                    <input type="text" id="partner_key" name="partner_key" value="{{defaults.partner_key}}" placeholder="e.g., testparnerkey">
                 </div>
 
                 <div class="form-group">
@@ -68,8 +68,13 @@
             <div class="nav-buttons">
                 {{#if defaultsComplete}}
                 <a href="/generate-sale-form" class="btn btn-primary btn-large">Generate Sale</a>
+                {{#if vasEnabled}}
                 <a href="/vas-enable-form" class="btn btn-secondary btn-large">Enable VAS</a>
                 <a href="/vas-update-form" class="btn btn-secondary btn-large">Update VAS</a>
+                {{else}}
+                <span class="btn btn-disabled btn-large" title="Set Partner Key in defaults to enable">Enable VAS</span>
+                <span class="btn btn-disabled btn-large" title="Set Partner Key in defaults to enable">Update VAS</span>
+                {{/if}}
                 {{else}}
                 <span class="btn btn-disabled btn-large">Generate Sale</span>
                 <span class="btn btn-disabled btn-large">Enable VAS</span>
@@ -134,7 +139,7 @@
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Partner Key:</span>
-                    <span class="setting-value {{#unless defaults.partner_key}}setting-missing{{/unless}}">{{#if defaults.partner_key}}{{defaults.partner_key}}{{else}}<em>Not set</em>{{/if}}</span>
+                    <span class="setting-value">{{#if defaults.partner_key}}{{defaults.partner_key}}{{else}}<em>Not set (optional)</em>{{/if}}</span>
                 </div>
                 <div class="setting-item">
                     <span class="setting-label">Default MPL:</span>

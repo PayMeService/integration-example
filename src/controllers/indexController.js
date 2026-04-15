@@ -5,7 +5,7 @@ const { isProdDomain } = require('../utils/domain');
 const { getServerUrl } = require('../utils/serverUrl');
 
 const isDefaultsComplete = (defaults) => {
-  return !!(defaults?.server && defaults?.partner_key && defaults?.seller_payme_id);
+  return !!(defaults?.server && defaults?.seller_payme_id);
 };
 
 const getIndex = (req, res) => {
@@ -27,6 +27,7 @@ const getIndex = (req, res) => {
     defaultsComplete: isDefaultsComplete(defaults),
     applePayEnabled: !!defaults.apple_pay_merchant_id,
     googlePayEnabled: !!defaults.public_key,
+    vasEnabled: !!defaults.partner_key,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     isProd,
     saved: req.query.saved === 'true',

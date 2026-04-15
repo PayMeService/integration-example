@@ -32,7 +32,7 @@ const getApplePaySaleById = (req, res) => {
     merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: serverUrl
+    apiUrl: getTestMode(defaults) ? serverUrl : null
   });
 };
 
@@ -77,7 +77,7 @@ const generateApplePaySale = async (req, res) => {
     merchantId: defaults.apple_pay_merchant_id,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: serverUrl
+    apiUrl: getTestMode(defaults) ? serverUrl : null
   });
 };
 

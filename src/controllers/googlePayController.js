@@ -71,7 +71,7 @@ const generateGooglePaySale = async (req, res) => {
     apiKey: defaults.public_key,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: getApiUrl(req, defaults)
+    apiUrl: serverUrl,
   });
 };
 

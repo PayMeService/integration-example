@@ -31,7 +31,7 @@ const getGooglePaySaleById = (req, res) => {
     apiKey: defaults.public_key,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: serverUrl,
+    apiUrl: getTestMode(defaults) ? serverUrl : null,
   });
 };
 
@@ -71,7 +71,7 @@ const generateGooglePaySale = async (req, res) => {
     apiKey: defaults.public_key,
     paymeSdkUrl: isProd ? PAYME_SDK_URL_PRODUCTION : getPayMeSdkUrl(defaults),
     testMode: getTestMode(defaults),
-    apiUrl: serverUrl,
+    apiUrl: getTestMode(defaults) ? serverUrl : null,
   });
 };
 

@@ -55,6 +55,48 @@ Creates an Apple Pay sale and renders the Apple Pay payment page with:
 ### GET /sale/:saleId
 Renders `CORE_API_URL/sale/generate/{saleId}` directly in an iframe without any API calls
 
+### GET /hosted-fields-form
+Configuration form for the Hosted Fields tokenization test (see below).
+
+### POST /hosted-fields
+Renders the live Hosted Fields page that runs the PayMe SDK tokenization flow
+(`PayMe.create` → `hostedFields().create()/mount()` → `tokenize()`) with the chosen
+configuration.
+
+## Hosted Fields Tokenization Test
+
+Exercises the SDK's core PCI flow — the part not covered by the hosted sale page or
+the Apple/Google Pay flows. From the home page (with defaults set) click
+**Hosted Fields**.
+
+### What you can configure (`/hosted-fields-form`)
+
+- **Card fields** to mount as iframes: `cardNumber`, `cardExpiration`, `cvc`
+  (all on by default — needed for a card token).
+- **Payer fields** to optionally mount as hosted iframe inputs: first/last name,
+  email, phone, social ID, zip code.
+- **Payer values** passed to `tokenize()` for any payer field *not* mounted as a
+  hosted field (prefilled with sample values; clear one to test required-field
+  validation errors).
+- **Tokenize total**: amount, currency, item label, and language (en/he).
+
+### What the live page does (`/hosted-fields`)
+
+1. Uses the **MPL (`seller_payme_id`)** as the `PayMe.create()` auth token, the same
+   way the SDK's own `fully-featured` example does.
+2. Passes `testMode` and (in test mode) `apiUrl` to `create()`, so multi-env routing
+   is exercised against the configured server.
+3. Mounts the selected fields and wires their events: `validity-changed` / `keyup`
+   drive inline per-field validation messages, and `card-type-changed` shows the
+   detected card brand — useful for testing the card validators.
+4. **Tokenize** button calls `instance.tokenize()` and shows the full token result
+   (success) or the field-keyed error object (failure) plus a live event log.
+5. **Teardown** button calls `instance.teardown()` to verify cleanup.
+
+> Note: card entry and the final tokenization require a real MPL and a (test) card
+> number, so the actual submit is a manual step. To validate a staging SDK build,
+> enable **Use staging SDK URL** in the home-page defaults.
+
 ## Apple Pay Setup
 
 ### Prerequisites

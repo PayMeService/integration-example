@@ -1,0 +1,91 @@
+<div class="container form-container">
+    <div class="form-wrapper">
+        <h1>Hosted Fields Tokenization</h1>
+
+        <p class="info-text" style="margin-top: 0;">
+            Configure which hosted fields to mount and what to tokenize, then run the
+            live PayMe SDK tokenization flow.
+        </p>
+
+        <form id="hostedFieldsForm" action="/hosted-fields" method="POST">
+
+            <div class="nav-section">
+                <h2>Card fields <span class="required-label">* needed for a card token</span></h2>
+                {{#each cardFields}}
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                        <input type="checkbox" name="mount_{{this.key}}" style="width: auto; margin: 0;" {{#if this.checked}}checked{{/if}}>
+                        {{this.label}} <span class="optional-label">({{this.key}})</span>
+                    </label>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="nav-section">
+                <h2>Payer fields as hosted inputs <span class="optional-label">(optional)</span></h2>
+                <p class="info-text" style="margin-top: 0; text-align: left;">
+                    Mount these as iframe inputs. Anything left unchecked can still be sent to
+                    <code>tokenize()</code> using the values below.
+                </p>
+                {{#each payerFields}}
+                <div class="form-group">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; margin-bottom: 0;">
+                        <input type="checkbox" name="mount_{{this.key}}" style="width: auto; margin: 0;" {{#if this.checked}}checked{{/if}}>
+                        {{this.label}} <span class="optional-label">({{this.key}})</span>
+                    </label>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="nav-section">
+                <h2>Payer values for <code>tokenize()</code></h2>
+                <p class="info-text" style="margin-top: 0; text-align: left;">
+                    Used only for payer fields that are <strong>not</strong> mounted above. Clear a
+                    value to test required-field validation errors.
+                </p>
+                {{#each payerValues}}
+                <div class="form-group">
+                    <label for="val_{{this.key}}">{{this.label}}</label>
+                    <input type="text" id="val_{{this.key}}" name="val_{{this.key}}" value="{{this.sample}}" placeholder="{{this.label}}">
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="nav-section">
+                <h2>Tokenize total</h2>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" name="amount" required value="100" min="1" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency" required>
+                            {{#each currencies}}
+                            <option value="{{this}}">{{this}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="label">Item Label</label>
+                    <input type="text" id="label" name="label" required value="Test Product">
+                </div>
+                <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language" name="language" required>
+                        {{#each languages}}
+                        <option value="{{this.value}}">{{this.label}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Open Hosted Fields Page</button>
+        </form>
+
+        <p class="info-text">
+            <a href="/" class="btn btn-secondary" style="margin-top: 15px;">Back to Home</a>
+        </p>
+    </div>
+</div>

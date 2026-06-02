@@ -10,6 +10,7 @@ const indexController = require('./src/controllers/indexController');
 const saleController = require('./src/controllers/saleController');
 const applePayController = require('./src/controllers/applePayController');
 const googlePayController = require('./src/controllers/googlePayController');
+const hostedFieldsController = require('./src/controllers/hostedFieldsController');
 const vasController = require('./src/controllers/vasController');
 const { handleSaleError, handleVasError, asyncHandler } = require('./src/middleware/errorHandler');
 const { requireDefaults, requireVasDefaults } = require('./src/middleware/requireDefaults');
@@ -54,6 +55,10 @@ app.get('/generate-sale-form', requireDefaults, saleController.getGenerateSaleFo
 app.post('/generate-sale', requireDefaults, asyncHandler(saleController.generateSale), handleSaleError('sale'));
 app.post('/generate-apple-pay-sale', requireDefaults, asyncHandler(applePayController.generateApplePaySale), handleSaleError('apple-pay'));
 app.post('/generate-google-pay-sale', requireDefaults, asyncHandler(googlePayController.generateGooglePaySale), handleSaleError('google-pay'));
+
+// Hosted Fields tokenization (require defaults)
+app.get('/hosted-fields-form', requireDefaults, hostedFieldsController.getHostedFieldsForm);
+app.post('/hosted-fields', requireDefaults, hostedFieldsController.renderHostedFields);
 
 // VAS Routes (require defaults)
 app.get('/vas-enable-form', requireVasDefaults, vasController.getVasEnableForm);
